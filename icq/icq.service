@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<service id="icq">
+    <type>IM</type>
+    <provider>icq</provider>
+    <name>ICQ IM</name>
+    <icon>image://theme/icon-m-chat</icon>
+
+    <template>
+        <group name="telepathy">
+            <setting name="manager">haze</setting>
+            <setting name="protocol">icq</setting>
+            <setting name="ConnectAutomatically" type="b">true</setting>
+            <setting name="param-resource">Jolla</setting>
+        </group>
+
+        <group name="auth">
+            <setting name="method">password</setting>
+            <setting name="mechanism">password</setting>
+        </group>
+    </template>
+</service>

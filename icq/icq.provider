@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE provider>
+<provider version="1.0" id="icq">
+    <name>ICQ</name>
+    <description>ICQ account provider</description>
+    <icon>file:///usr/share/haze-accounts-extensions/icons/graphic-service-icq.png</icon>
+</provider>
