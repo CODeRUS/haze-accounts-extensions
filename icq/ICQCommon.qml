@@ -22,8 +22,12 @@ Column {
         inputMethodHints: Qt.ImhDigitsOnly
         errorHighlight: !text && acceptAttempted
 
-        placeholderText: "Enter username"
-        label: "Username"
+        //: Placeholder text for XMPP username
+        //% "Enter username"
+        placeholderText: qsTrId("components_accounts-ph-jabber_username_placeholder")
+        //: XMPP username
+        //% "Username"
+        label: qsTrId("components_accounts-la-jabber_username")
         onTextChanged: {
             if (focus) {
                 usernameEdited = true
@@ -43,8 +47,12 @@ Column {
         echoMode: TextInput.Password
         errorHighlight: !text && acceptAttempted
 
-        placeholderText: "Enter password"
-        label: "Password"
+        //: Placeholder text for password
+        //% "Enter password"
+        placeholderText: qsTrId("components_accounts-ph-jabber_password_placeholder")
+        //: XMPP password
+        //% "Password"
+        label: qsTrId("components_accounts-la-jabber_password")
         onTextChanged: {
             if (focus && !passwordEdited) {
                 passwordEdited = true
@@ -55,15 +63,20 @@ Column {
     }
 
     SectionHeader {
-        text: "Advanced settings"
+        //% "Advanced settings"
+        text: qsTrId("components_accounts-la-jabber_advanced_settings_header");
     }
 
     TextField {
         id: serverField
         width: parent.width
         inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhNoAutoUppercase
-        placeholderText: "Enter server address (Optional)"
-        label: "Server address"
+        //: Placeholder text for XMPP server address
+        //% "Enter server address (Optional)"
+        placeholderText: qsTrId("components_accounts-ph-jabber_server_placeholder")
+        //: XMPP server address
+        //% "Server address"
+        label: qsTrId("components_accounts-la-jabber_server")
         EnterKey.iconSource: "image://theme/icon-m-enter-next"
         EnterKey.onClicked: portField.focus = true
     }
@@ -72,10 +85,14 @@ Column {
         id: portField
         width: parent.width
         inputMethodHints: Qt.ImhDigitsOnly
-        placeholderText: "Enter port"
-        label: "Port"
+        //: Placeholder text for XMPP server port
+        //% "Enter port"
+        placeholderText: qsTrId("components_accounts-ph-jabber_port_placeholder")
+        //: XMPP server port
+        //% "Port"
+        label: qsTrId("components_accounts-la-jabber_port")
         text: "5190"
         EnterKey.iconSource: "image://theme/icon-m-enter-next"
-        EnterKey.onClicked: priorityField.focus = true
+        EnterKey.onClicked: focus = false
     }
 }

@@ -1,13 +1,14 @@
 Name:       haze-acounts-extensions
 
 Summary:    Extensions plugins for Telepathy Haze library
-Version:    0.1
+Version:    0.2.0
 Release:    1
 Group:      System/Application
 License:    Other
 Source0:    %{name}-%{version}.tar.gz
 Requires:   libpurple
 Requires:   telepathy-haze
+Requires:   jolla-settings-accounts >= 0.2.27
 BuildArch:  noarch
 
 %description
@@ -42,7 +43,9 @@ install -m 644 icq/icq.provider %{buildroot}%{_datadir}/accounts/providers
 install -m 644 icq/icq.service %{buildroot}%{_datadir}/accounts/services
 install -m 644 icq/icq.qml %{buildroot}%{_datadir}/accounts/ui
 install -m 644 icq/icq-settings.qml %{buildroot}%{_datadir}/accounts/ui
+install -m 644 icq/icq-update.qml %{buildroot}%{_datadir}/accounts/ui
 install -m 644 icq/ICQCommon.qml %{buildroot}%{_datadir}/accounts/ui
+install -m 644 icq/ICQSettingsDisplay.qml %{buildroot}%{_datadir}/accounts/ui
 
 # >> install pre
 # << install pre

@@ -3,73 +3,70 @@ import Sailfish.Silica 1.0
 import Sailfish.Accounts 1.0
 import com.jolla.settings.accounts 1.0
 
-AccountCreationDialog {
+AccountCreationAgent {
     id: root
-    anchors.fill: parent
-    canAccept: canSkip || settings.acceptableInput
-    canSkip: settings.username == "" && settings.password == "" && settings.server == ""
 
-    property string name: accountProvider.displayName
-    property string iconSource: accountProvider.iconName
+    property Item _settingsDialog
 
-    onAcceptPendingChanged: {
-        if (acceptPending === true) {
-            settings.acceptAttempted = true
-        }
-    }
+    initialPage: Dialog {
+        allowedOrientations: Orientation.Portrait
+        canAccept: settings.acceptableInput
+        acceptDestination: busyComponent
 
-    onStatusChanged: {
-        if (status == PageStatus.Inactive
-                && result == DialogResult.Accepted
-                && !canSkip) {
-            // Start the account creation process when the next page becomes active to ensure the
-            // account is not created if user quits app on this screen and also to prevent
-            // synchronous account creation from causing a jerky page transition
-            accountFactory.beginCreation()
-        }
-    }
+        SilicaFlickable {
+            anchors.fill: parent
+            contentHeight: contentColumn.height + Theme.paddingLarge
 
-    SilicaFlickable {
-        id: flickable
-
-        anchors.fill: parent
-        contentHeight: contentColumn.height
-
-        VerticalScrollDecorator {}
-        Column {
-            id: contentColumn
-
-            spacing: Theme.paddingLarge
-            width: parent.width
-
-            DialogHeader {
-                dialog: root
-                title: root.canSkip ? root.skipText : defaultAcceptText
-            }
-
-            Item {
+            Column {
+                id: contentColumn
                 width: parent.width
-                height: Theme.itemSizeSmall
-                x: Theme.paddingLarge
 
-                Image {
-                    id: icon
-                    width: Theme.iconSizeMedium
-                    height: Theme.iconSizeMedium
-                    anchors.verticalCenter: parent.verticalCenter
-                    source: root.iconSource
+                DialogHeader {
+                    dialog: initialPage
                 }
-                Label {
-                    anchors.left: icon.right
-                    anchors.leftMargin: Theme.paddingLarge
-                    anchors.verticalCenter: parent.verticalCenter
-                    text: root.name
-                    color: Theme.highlightColor
+
+                Item {
+                    x: Theme.paddingLarge
+                    width: parent.width - x*2
+                    height: icon.height + Theme.paddingLarge
+
+                    Image {
+                        id: icon
+                        width: Theme.iconSizeLarge
+                        height: width
+                        anchors.top: parent.top
+                        source: root.accountProvider.iconName
+                    }
+                    Label {
+                        anchors {
+                            left: icon.right
+                            leftMargin: Theme.paddingLarge
+                            right: parent.right
+                            verticalCenter: icon.verticalCenter
+                        }
+                        text: root.accountProvider.displayName
+                        color: Theme.highlightColor
+                        font.pixelSize: Theme.fontSizeLarge
+                        truncationMode: TruncationMode.Fade
+                    }
+                }
+
+                ICQCommon {
+                    id: settings
                 }
             }
 
-            ICQCommon {
-                id: settings
+            VerticalScrollDecorator {}
+        }
+    }
+
+    Component {
+        id: busyComponent
+        AccountBusyPage {
+            onStatusChanged: {
+                if (status == PageStatus.Active) {
+                    accountFactory.beginCreation()
+                }
             }
         }
     }
@@ -96,11 +93,55 @@ AccountCreationDialog {
 
         onError: {
             console.log("ICQ creation error:", message)
+            initialPage.acceptDestinationInstance.state = "info"
             root.accountCreationError(message)
         }
 
         onSuccess: {
+            root._settingsDialog = settingsComponent.createObject(root, {"accountId": newAccountId})
+            pageStack.push(root._settingsDialog)
             root.accountCreated(newAccountId)
+        }
+    }
+
+    Component {
+        id: settingsComponent
+        Dialog {
+            property alias accountId: settingsDisplay.accountId
+
+            allowedOrientations: Orientation.Portrait
+            acceptDestination: root.endDestination
+            acceptDestinationAction: root.endDestinationAction
+            acceptDestinationProperties: root.endDestinationProperties
+            acceptDestinationReplaceTarget: root.endDestinationReplaceTarget
+            backNavigation: false
+
+            onAccepted: {
+                root.delayDeletion = true
+                settingsDisplay.saveAccount()
+            }
+
+            SilicaFlickable {
+                anchors.fill: parent
+                contentHeight: header.height + settingsDisplay.height + Theme.paddingLarge
+
+                DialogHeader {
+                    id: header
+                }
+
+                ICQSettingsDisplay {
+                    id: settingsDisplay
+                    anchors.top: header.bottom
+                    accountProvider: root.accountProvider
+                    autoEnableAccount: true
+
+                    onAccountSaveCompleted: {
+                        root.delayDeletion = false
+                    }
+                }
+
+                VerticalScrollDecorator {}
+            }
         }
     }
 }
